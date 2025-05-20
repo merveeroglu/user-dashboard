@@ -36,11 +36,14 @@ const UserModal = ({
     lastName: yup.string().required("Soyad alanı zorunludur"),
     email: yup
       .string()
-      .email("Geçerli bir e-posta adresi giriniz")
+      .matches(/^[^\s@]+@[^\s@]*$/, "Geçerli bir e-posta adresi giriniz")
       .required("E-posta alanı zorunludur"),
     phone: yup
       .string()
-      .matches(/^\+?\d{1,3}[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{4}$/, "Eksik rakam girdiniz")
+      .matches(
+        /^\+?\d{1,3}[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{4}$/,
+        "Eksik rakam girdiniz"
+      )
       .required("Telefon alanı zorunludur"),
     university: yup.string().required("Telefon alanı zorunludur"),
   });
