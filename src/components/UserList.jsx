@@ -16,35 +16,36 @@ const UserList = ({ search, setIsModalOpen, setSelectedUser, newUsers }) => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
 
-const loadData = async (page) => {
-  const skip = (page - 1) * limit;
-  try {
-    const response = await fetchUsers(skip, search);
+  const loadData = async (page) => {
+    const skip = (page - 1) * limit;
+    try {
+      const response = await fetchUsers(skip, search);
 
-    let fetchedUsers = response?.users || [];
-    let total = response?.total || 0;
+      let fetchedUsers = response?.users || [];
+      let total = response?.total || 0;
 
-    const storedUsers = JSON.parse(localStorage.getItem("newUsers")) || [];
+      const storedUsers = JSON.parse(localStorage.getItem("newUsers")) || [];
 
-    // Arama filtresine uyan local kullanıcılar için 
-    const filteredStoredUsers = storedUsers.filter((user) => {
-      const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-      return fullName.includes(search.toLowerCase());
-    });
+      // Arama filtresine uyan local kullanıcılar için
+      const filteredStoredUsers = storedUsers.filter((user) => {
+        const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+        return fullName.includes(search.toLowerCase());
+      });
 
-    const totalPages = Math.ceil((total + filteredStoredUsers.length) / limit);
+      const totalPages = Math.ceil(
+        (total + filteredStoredUsers.length) / limit
+      );
 
-    if (page === totalPages) {
-      fetchedUsers = [...fetchedUsers, ...filteredStoredUsers];
+      if (page === totalPages) {
+        fetchedUsers = [...fetchedUsers, ...filteredStoredUsers];
+      }
+
+      setUsers(fetchedUsers);
+      setTotalUsers(total + filteredStoredUsers.length);
+    } catch (error) {
+      console.log(error);
     }
-
-    setUsers(fetchedUsers);
-    setTotalUsers(total + filteredStoredUsers.length);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
+  };
 
   const totalPages = Math.ceil(totalUsers / limit);
 
@@ -82,15 +83,14 @@ const loadData = async (page) => {
     setUserToDelete(null);
   };
 
-
-    useEffect(() => {
+  useEffect(() => {
     setPage(1);
-    loadData(1)
-    }, [search]);
+    loadData(1);
+  }, [search]);
 
-    useEffect(() => {
-    loadData(page); 
-    }, [page, newUsers]);
+  useEffect(() => {
+    loadData(page);
+  }, [page, newUsers]);
 
   return (
     <>
@@ -105,7 +105,10 @@ const loadData = async (page) => {
         }}
       />
 
-      <div className="d-flex justify-content-end mb-4">
+      <div className="d-flex justify-content-between align-items-center mb-3 mt-3">
+        <div className="border rounded px-4 py-2 mt-4 bg-light shadow-sm">
+          <strong>Toplam Kullanıcı:</strong> {totalUsers}
+        </div>
         <Button
           variant="success"
           size="sm"
@@ -113,7 +116,7 @@ const loadData = async (page) => {
             setSelectedUser(null);
             setIsModalOpen(true);
           }}
-          className="px-5 mt-4"
+          className="px-5 mt-3"
         >
           + Add New
         </Button>
@@ -139,25 +142,25 @@ const loadData = async (page) => {
                 <td>{user.phone}</td>
                 <td>{user.university}</td>
                 <td>
-                    <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mx-3">
-                        <Button
-                            variant="success"
-                            size="sm"
-                            onClick={() => {
-                            setSelectedUser(user);
-                            setIsModalOpen(true);
-                            }}
-                        >
-                            <MdModeEditOutline />
-                        </Button>
-                        <Button
-                            variant="danger"
-                            size="sm"
-                            onClick={() => handleDelete(user)}
-                        >
-                            <MdDelete />
-                        </Button>
-                    </div>
+                  <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mx-3">
+                    <Button
+                      variant="success"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setIsModalOpen(true);
+                      }}
+                    >
+                      <MdModeEditOutline />
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleDelete(user)}
+                    >
+                      <MdDelete />
+                    </Button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -165,7 +168,9 @@ const loadData = async (page) => {
         </Table>
       </div>
       <div className="d-flex justify-content-center">
-        <Pagination className="pagination-success">{renderPaginationItems()}</Pagination>
+        <Pagination className="pagination-success">
+          {renderPaginationItems()}
+        </Pagination>
       </div>
     </>
   );
