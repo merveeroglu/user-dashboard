@@ -66,3 +66,19 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+.pagination-success .page-link {
+  background-color: #198754; 
+  color: white;
+  border-color: #198754;
+}
+
+.pagination-success .page-link:hover {
+  background-color: #157347;
+  border-color: #146c43;
+}
+
+.pagination-success .page-item.active .page-link {
+  background-color: 	#0e5539e8 !important; /* override için önemli */
+  border-color: 	#0e5539e8 !important;
+  color: #fff !important;
+}
