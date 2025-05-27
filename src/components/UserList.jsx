@@ -26,8 +26,19 @@ const UserList = ({ search, setIsModalOpen, setSelectedUser, newUsers }) => {
 
       const storedUsers = JSON.parse(localStorage.getItem("newUsers")) || [];
 
+      // API'den gelen kullanıcıların düzenlenmiş hallerini kontrol et
+      fetchedUsers = fetchedUsers.map(apiUser => {
+        const editedUser = storedUsers.find(storedUser => 
+          storedUser.id === apiUser.id && storedUser.isApiUser
+        );
+        return editedUser || apiUser;
+      });
+
       // Arama filtresine uyan local kullanıcılar için
       const filteredStoredUsers = storedUsers.filter((user) => {
+        // API'den gelen ve düzenlenmiş kullanıcıları filtreleme dışında tut
+        if (user.isApiUser) return false;
+        
         const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
         return fullName.includes(search.toLowerCase());
       });

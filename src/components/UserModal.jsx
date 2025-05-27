@@ -51,14 +51,29 @@ const UserModal = ({
     try {
       if (user) {
         const storedUsers = JSON.parse(localStorage.getItem("newUsers")) || [];
-
-        const updatedUsers = storedUsers.map((u) =>
-          u.id === user.id ? { ...u, ...values } : u
-        );
-        localStorage.setItem("newUsers", JSON.stringify(updatedUsers));
-        setNewUsers((prev) =>
-          prev.map((u) => (u.id === user.id ? { ...u, ...values } : u))
-        );
+        
+        // API'den gelen kullanıcılar için de düzenleme yapılabilmesi için
+        // eğer kullanıcı storedUsers içinde yoksa, yeni bir kullanıcı olarak ekle
+        const existingUserIndex = storedUsers.findIndex(u => u.id === user.id);
+        
+        if (existingUserIndex === -1) {
+          // API'den gelen kullanıcıyı localStorage'a ekle
+          const newUser = {
+            ...user,
+            ...values,
+            isApiUser: true // API'den gelen kullanıcı olduğunu belirtmek için
+          };
+          storedUsers.push(newUser);
+        } else {
+          // Mevcut kullanıcıyı güncelle
+          storedUsers[existingUserIndex] = {
+            ...storedUsers[existingUserIndex],
+            ...values
+          };
+        }
+        
+        localStorage.setItem("newUsers", JSON.stringify(storedUsers));
+        setNewUsers(storedUsers);
       } else {
         const response = await axios.post(
           "https://dummyjson.com/users/add",
