@@ -25,9 +25,9 @@ const UserList = ({ search, setIsModalOpen, setSelectedUser, newUsers }) => {
       let total = response?.total || 0;
 
       const storedUsers = JSON.parse(localStorage.getItem("newUsers")) || [];
+      const deletedUsers = JSON.parse(localStorage.getItem("deletedUsers")) || [];
 
       // API'den gelen kullanıcıları filtrele (silinen kullanıcıları çıkar)
-      const deletedUsers = JSON.parse(localStorage.getItem("deletedUsers")) || [];
       fetchedUsers = fetchedUsers.filter(apiUser => !deletedUsers.includes(apiUser.id));
 
       // API'den gelen kullanıcıların düzenlenmiş hallerini kontrol et
@@ -47,16 +47,16 @@ const UserList = ({ search, setIsModalOpen, setSelectedUser, newUsers }) => {
         return fullName.includes(search.toLowerCase());
       });
 
-      const totalPages = Math.ceil(
-        (total + filteredStoredUsers.length) / limit
-      );
+      // Toplam kullanıcı sayısını hesapla (API + local - silinen)
+      const totalUserCount = total + filteredStoredUsers.length - deletedUsers.length;
+      const totalPages = Math.ceil(totalUserCount / limit);
 
       if (page === totalPages) {
-          fetchedUsers = [...fetchedUsers, ...filteredStoredUsers];
+        fetchedUsers = [...fetchedUsers, ...filteredStoredUsers];
       }
 
       setUsers(fetchedUsers);
-      setTotalUsers(total + filteredStoredUsers.length);
+      setTotalUsers(totalUserCount); // Silinen kullanıcıları çıkararak toplam sayıyı güncelle
     } catch (error) {
       console.log(error);
     }
