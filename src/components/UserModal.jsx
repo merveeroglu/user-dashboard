@@ -8,6 +8,7 @@ import Col from "react-bootstrap/Col";
 import { Row, Button, Form, FormControl, InputGroup } from "react-bootstrap";
 import axios from "axios";
 import ConfirmModal from "./common/ConfirmModal";
+import { FaCheckCircle } from "react-icons/fa";
 
 const UserModal = ({
   isModalOpen,
@@ -42,7 +43,7 @@ const UserModal = ({
       .string()
       .matches(
         /^\+?\d{1,3}[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{4}$/,
-        "Eksik rakam girdiniz"
+        "Uyumlu bir telefon numarası girmediniz!"
       )
       .required("Telefon alanı zorunludur"),
     university: yup.string().required("Telefon alanı zorunludur"),
@@ -57,7 +58,7 @@ const UserModal = ({
         const existingUserIndex = storedUsers.findIndex(u => u.id === user.id);
         
         if (existingUserIndex === -1) {
-          // API'den gelen kullanıcıyı localStorage'a ekle
+          // API'den gelen kullanıcıyı localStorage'e ekle
           const newUser = {
             ...user,
             ...values,
@@ -91,7 +92,12 @@ const UserModal = ({
         );
         setNewUsers((prev) => [...prev, newUser]);
 
-        setConfirmMessage("Kullanıcı başarıyla eklendi.");
+        setConfirmMessage(
+          <div className="text-center">
+            <FaCheckCircle size={150} className="text-success mb-3" />
+            <p className="mb-0">Kullanıcı başarıyla eklendi.</p>
+          </div>
+        );
         setConfirmShow(true);
       }
 
@@ -253,7 +259,7 @@ const UserModal = ({
 
       <ConfirmModal
         show={confirmShow}
-        title="Bilgi"
+        title=""
         message={confirmMessage}
         onConfirm={handleConfirm}
         onCancel={handleCancel}

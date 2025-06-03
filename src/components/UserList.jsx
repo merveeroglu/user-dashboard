@@ -26,6 +26,10 @@ const UserList = ({ search, setIsModalOpen, setSelectedUser, newUsers }) => {
 
       const storedUsers = JSON.parse(localStorage.getItem("newUsers")) || [];
 
+      // API'den gelen kullanıcıları filtrele (silinen kullanıcıları çıkar)
+      const deletedUsers = JSON.parse(localStorage.getItem("deletedUsers")) || [];
+      fetchedUsers = fetchedUsers.filter(apiUser => !deletedUsers.includes(apiUser.id));
+
       // API'den gelen kullanıcıların düzenlenmiş hallerini kontrol et
       fetchedUsers = fetchedUsers.map(apiUser => {
         const editedUser = storedUsers.find(storedUser => 
@@ -48,7 +52,7 @@ const UserList = ({ search, setIsModalOpen, setSelectedUser, newUsers }) => {
       );
 
       if (page === totalPages) {
-        fetchedUsers = [...fetchedUsers, ...filteredStoredUsers];
+          fetchedUsers = [...fetchedUsers, ...filteredStoredUsers];
       }
 
       setUsers(fetchedUsers);
@@ -89,7 +93,16 @@ const UserList = ({ search, setIsModalOpen, setSelectedUser, newUsers }) => {
     const updatedUsers = storedUsers.filter((user) => user.id !== id);
     localStorage.setItem("newUsers", JSON.stringify(updatedUsers));
 
+    // Silinen kullanıcının ID'sini deletedUsers listesine ekle
+    const deletedUsers = JSON.parse(localStorage.getItem("deletedUsers")) || [];
+    if (!deletedUsers.includes(id)) {
+      deletedUsers.push(id);
+      localStorage.setItem("deletedUsers", JSON.stringify(deletedUsers));
+    }
+    //
+
     setUsers((prev) => prev.filter((user) => user.id !== id));
+    setTotalUsers((prev) => prev - 1);
     setConfirmDialogOpen(false);
     setUserToDelete(null);
   };
